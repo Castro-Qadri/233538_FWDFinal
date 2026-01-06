@@ -54,3 +54,5 @@ export const deleteWorkout = async (id) => {
   } catch (error) {
     console.error('Error deleting workout:', error.response?.data || error);
     throw error.response?.data?.error || error.message || 'Error deleting workout';
+  }
+};
