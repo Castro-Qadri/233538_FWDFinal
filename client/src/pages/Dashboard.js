@@ -38,14 +38,15 @@ const Dashboard = () => {
     }
   };
 
-  // Handle creating new workout
+  // Handle create workout
   const handleCreateWorkout = async (workoutData) => {
     try {
       const newWorkout = await createWorkout(workoutData);
       setWorkouts(prev => [newWorkout, ...prev]);
-      showSuccessMessage(' Workout added successfully!');
+      showSuccessMessage('✓ Workout added successfully!');
     } catch (err) {
-      setError(err.message || 'Failed to create workout');
+      const errorMsg = err || 'Failed to create workout';
+      setError(errorMsg);
       console.error('Error creating workout:', err);
       throw err;
     }
@@ -53,17 +54,26 @@ const Dashboard = () => {
 
   // Handle updating existing workout
   const handleUpdateWorkout = async (workoutData) => {
+    if (!editingWorkout || !editingWorkout._id) {
+      setError('No workout selected for editing');
+      return;
+    }
+
     try {
       const updatedWorkout = await updateWorkout(editingWorkout._id, workoutData);
-      setWorkouts(prev => 
-        prev.map(workout => 
+      
+      setWorkouts(prev => {
+        const updated = prev.map(workout => 
           workout._id === editingWorkout._id ? updatedWorkout : workout
-        ).sort((a, b) => new Date(b.date) - new Date(a.date))
-      );
+        );
+        return updated.sort((a, b) => new Date(b.date) - new Date(a.date));
+      });
+      
       setEditingWorkout(null);
-      showSuccessMessage(' Workout updated successfully!');
+      showSuccessMessage('✓ Workout updated successfully!');
     } catch (err) {
-      setError(err.message || 'Failed to update workout');
+      const errorMsg = err || 'Failed to update workout';
+      setError(errorMsg);
       console.error('Error updating workout:', err);
       throw err;
     }
@@ -95,14 +105,15 @@ const Dashboard = () => {
     try {
       await deleteWorkout(id);
       setWorkouts(prev => prev.filter(workout => workout._id !== id));
-      showSuccessMessage(' Workout deleted successfully!');
+      showSuccessMessage('✓ Workout deleted successfully!');
       
       // If we were editing this workout, clear the edit state
       if (editingWorkout && editingWorkout._id === id) {
         setEditingWorkout(null);
       }
     } catch (err) {
-      setError(err.message || 'Failed to delete workout');
+      const errorMsg = err || 'Failed to delete workout';
+      setError(errorMsg);
       console.error('Error deleting workout:', err);
       throw err;
     }

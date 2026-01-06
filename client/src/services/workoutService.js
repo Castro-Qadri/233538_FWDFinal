@@ -8,7 +8,8 @@ export const getAllWorkouts = async () => {
     const response = await axios.get(API_URL);
     return response.data.data; // Extract data array from response
   } catch (error) {
-    throw error.response?.data?.error || 'Error fetching workouts';
+    console.error('Error fetching workouts:', error);
+    throw error.response?.data?.error || error.message || 'Error fetching workouts';
   }
 };
 
@@ -18,7 +19,8 @@ export const getWorkoutById = async (id) => {
     const response = await axios.get(`${API_URL}/${id}`);
     return response.data.data;
   } catch (error) {
-    throw error.response?.data?.error || 'Error fetching workout';
+    console.error('Error fetching workout:', error);
+    throw error.response?.data?.error || error.message || 'Error fetching workout';
   }
 };
 
@@ -28,7 +30,8 @@ export const createWorkout = async (workoutData) => {
     const response = await axios.post(API_URL, workoutData);
     return response.data.data;
   } catch (error) {
-    throw error.response?.data?.error || 'Error creating workout';
+    console.error('Error creating workout:', error.response?.data || error);
+    throw error.response?.data?.error || error.message || 'Error creating workout';
   }
 };
 
@@ -38,7 +41,8 @@ export const updateWorkout = async (id, workoutData) => {
     const response = await axios.put(`${API_URL}/${id}`, workoutData);
     return response.data.data;
   } catch (error) {
-    throw error.response?.data?.error || 'Error updating workout';
+    console.error('Error updating workout:', error.response?.data || error);
+    throw error.response?.data?.error || error.message || 'Error updating workout';
   }
 };
 
@@ -48,6 +52,5 @@ export const deleteWorkout = async (id) => {
     const response = await axios.delete(`${API_URL}/${id}`);
     return response.data.data;
   } catch (error) {
-    throw error.response?.data?.error || 'Error deleting workout';
-  }
-};
+    console.error('Error deleting workout:', error.response?.data || error);
+    throw error.response?.data?.error || error.message || 'Error deleting workout';

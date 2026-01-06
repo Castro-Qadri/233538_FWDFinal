@@ -47,12 +47,12 @@ exports.createWorkout = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // Create workout
+  // Create workout with proper type conversion
   const workout = await Workout.create({
-    exerciseName,
-    duration,
-    caloriesBurned,
-    date
+    exerciseName: exerciseName.trim(),
+    duration: Number(duration),
+    caloriesBurned: Number(caloriesBurned),
+    date: new Date(date)
   });
 
   res.status(201).json({
@@ -66,6 +66,15 @@ exports.createWorkout = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/workouts/:id
 // @access  Public
 exports.updateWorkout = asyncHandler(async (req, res, next) => {
+  const { exerciseName, duration, caloriesBurned, date } = req.body;
+
+  // Validate required fields
+  if (!exerciseName || !duration || !caloriesBurned || !date) {
+    return next(
+      new ErrorResponse('Please provide all required fields: exerciseName, duration, caloriesBurned, and date', 400)
+    );
+  }
+
   let workout = await Workout.findById(req.params.id);
 
   if (!workout) {
@@ -77,7 +86,12 @@ exports.updateWorkout = asyncHandler(async (req, res, next) => {
   // Update workout with new data
   workout = await Workout.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    {
+      exerciseName,
+      duration: Number(duration),
+      caloriesBurned: Number(caloriesBurned),
+      date: new Date(date)
+    },
     {
       new: true, // Return updated document
       runValidators: true // Run schema validators
