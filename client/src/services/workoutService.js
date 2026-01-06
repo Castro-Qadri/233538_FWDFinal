@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = '/api/workouts';
+const API_URL = process.env.NODE_ENV === 'production' 
+  ? '/api/workouts' 
+  : '/api/workouts';
 
 // Get all workouts
 export const getAllWorkouts = async () => {

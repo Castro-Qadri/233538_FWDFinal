@@ -4,6 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const path = require('path');
 const ErrorResponse = require('./utils/errorResponse');
 
 // Load environment variables
@@ -39,19 +40,23 @@ const connectDB = async () => {
   }
 };
 
-// Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'MERN Stack API is running!' });
-});
+// API Routes (must come before static files)
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/workouts', require('./routes/workouts')); // Workout routes
 
+// Serve static files from React build folder
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+// Routes for API testing
 app.get('/api', (req, res) => {
   res.json({ message: 'MERN Stack API is running!' });
 });
 
-// API Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/workouts', require('./routes/workouts')); // Workout routes
+// Serve React app for all other routes (SPA)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
