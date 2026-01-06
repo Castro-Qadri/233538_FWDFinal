@@ -53,12 +53,7 @@ app.get('/api', (req, res) => {
   res.json({ message: 'MERN Stack API is running!' });
 });
 
-// Serve React app for all other routes (SPA)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build/index.html'));
-});
-
-// Error handling middleware
+// Error handling middleware (must come before wildcard route)
 app.use((err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
@@ -90,9 +85,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
+// Serve React app for all other routes (SPA) - must be last
 app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  res.sendFile(path.join(__dirname, 'client/build/index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
